@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package books;
+
+service BookService {
+    rpc List (Empty) returns (Empty) {}
+}
+
+message Empty {}
