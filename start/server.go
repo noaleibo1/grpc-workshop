@@ -6,19 +6,14 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	books "github.com/noaleibo1/grpc-workshop/step-1-list-books/books"
+	books "github.com/noaleibo1/grpc-workshop/start/books"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/codes"
 )
 
 var (
 	port = flag.Int("port", 50051, "The server port")
-	booksList = []*books.Book{
-		{
-			Id: 123,
-			Title: "A Tale of Two Cities",
-			Author: "Charles Dickens",
-		},
-	}
 )
 
 func main() {
@@ -38,6 +33,6 @@ func main() {
 type service struct {
 }
 
-func (s *service) List(context.Context, *books.Empty) (*books.BookList, error){
-	return &books.BookList{Books: booksList}, nil
+func (s *service) List(context.Context, *books.Empty) (*books.Empty, error){
+	return &books.Empty{}, status.Error(codes.Unimplemented, "The server does not implement this method")
 }
