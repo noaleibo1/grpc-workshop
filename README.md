@@ -6,8 +6,31 @@ Uses Go server instead of Node.js server.
 ## Get the initial files
 
 * Clone this project. The `init-files` folder contains the file `client.go`, a command-line client for interacting with the gRPC service that that will be created in this codelab.
-* From `init-files` folder run `go run client.go`.
-This command will fail since we don't have a gRPC service running.
+* Run `go get -u google.golang.org/grpc` to install gRPC for Go on your computer.
+* From `init-files` folder run `go run client.go`. You should receive the following:
+```commandline
+go run client.go 
+client.go is a command-line client for this codelab's gRPC service
+
+Usage:
+  client.go list                            List all books
+  client.go insert <id> <title> <author>    Insert a book
+  client.go get <id>                        Get a book by its ID
+  client.go delete <id>                     Delete a book by its ID
+  client.go watch                           Watch for inserted books
+```
+
+Try calling one of the available commands:
+```commandline
+go run client.go list
+```
+You will see a list of errors after a few seconds because the node gRPC server does not yet exist!
+
+grpc: addrConn.resetTransport failed to create client transport: connection error: desc = "transport: Error while dialing dial tcp 0.0.0.0:50051: getsockopt: connection refused"; Reconnecting to {0.0.0.0:50051 <nil>}
+2017/06/30 13:02:03 List books: rpc error: code = Unavailable desc = grpc: the connection is unavailable
+exit status 1
+
+Let's fix this!
 
 ## Step 1: List all books
 
@@ -416,3 +439,19 @@ Server stream data received:
 ```
 
 Press CTRL-C to exit the client.go watch process.
+
+## Step 5: Create gRPC client
+
+In the original workshop, in this step we create a new Node.js gRPC client. Because we already have a client written in go we can simply just go over it.
+
+## Summary
+
+What we've covered:
+* The Protocol Buffer Language
+* How to implement a gRPC server using Go
+* How to implement a gRPC client using Go
+
+Next Steps:
+* Learn to implement a gRPC client for your service using another language.
+* Learn to deploy your Node.js service on App Engine
+* Learn to persist your data
