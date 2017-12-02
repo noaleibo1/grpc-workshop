@@ -6,10 +6,11 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	books "github.com/noaleibo1/grpc-workshop/step-3-get-and-delete-books/books"
+	books "github.com/noaleibo1/grpc-workshop/step-4-stream-added-books/books"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
+	"github.com/olebedev/emitter"
 )
 
 var (
@@ -21,6 +22,7 @@ var (
 			Author: "Charles Dickens",
 		},
 	}
+	newBookEmitter = emitter.Emitter{}
 )
 
 func main() {
@@ -46,6 +48,7 @@ func (s *service) List(context.Context, *books.Empty) (*books.BookList, error){
 
 func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, error) {
 	booksList = append(booksList, book)
+	newBookEmitter.Emit("NewBook")
 	return &books.Empty{}, nil
 }
 
@@ -66,4 +69,15 @@ func (s *service) Delete (ctx context.Context, req *books.BookIdRequest) (*books
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "Not found")
+}
+
+func (s *service) Watch(empty *books.Empty, stream books.BookService_WatchServer) error {
+	c := newBookEmitter.On("NewBook")
+	for {
+		<-c
+		booksListLength := len(booksList)
+		stream.Send(booksList[booksListLength-1])
+	}
+	newBookEmitter.Off("NewBook")
+	return nil
 }

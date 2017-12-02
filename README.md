@@ -364,3 +364,55 @@ service BookService {
 ```
 
 When the client calls the Watch method, it will establish a stream and server will be able to stream Book messages when books are inserted.
+
+To implement this method you will need to install Emitter:
+```commandline
+go get github.com/olebedev/emitter
+```
+
+Now edit server.go and add the following events package, bookStream event listener and watch handler function:
+```go
+func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, error) {
+	booksList = append(booksList, book)
+	newBookEmitter.Emit("NewBook")
+	return &books.Empty{}, nil
+}
+```
+Handler functions for streaming rpc methods are invoked with a writable stream object.
+
+To stream messages to the client, the stream's write() function is called when an new_book event is emitted.
+
+Edit server.js and update the insert function to emit a new_book event when books are inserted:
+```go
+func (s *service) Watch(empty *books.Empty, stream books.BookService_WatchServer) error {
+	c := newBookEmitter.On("NewBook")
+	for {
+		<-c
+		booksListLength := len(booksList)
+		stream.Send(booksList[booksListLength-1])
+	}
+	newBookEmitter.Off("NewBook")
+	return nil
+}
+```
+
+To test this, restart the node server and then run the go gRPC command-line client's watch command in a 3rd Cloud Shell Session:
+```commandline
+go run client.go watch
+```
+Now run the go gRPC command-line client's insert command in your main Cloud Shell session to insert a book:
+```commandline
+go run client.go insert 2 "The Three Musketeers" "Alexandre Dumas"
+```
+Check the Cloud Shell session where the client.go watch process is running. It should have printed out the inserted book!
+```commandline
+go run client.go watch
+Server stream data received:
+{
+  "id": 2,
+  "title": "The Three Musketeers",
+  "author": "Alexandre Dumas"
+}
+```
+
+Press CTRL-C to exit the client.go watch process.
