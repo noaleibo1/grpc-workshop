@@ -213,7 +213,7 @@ func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, e
 	return &books.Empty{}, nil
 }
 ```
-To test this, restart the node server and then run the go gRPC command-line client's insert command, passing id, title, and author as arguments:
+To test this, restart the go server and then run the go gRPC command-line client's insert command, passing id, title, and author as arguments:
 ```commandline
 go run client.go insert 2 "The Three Musketeers" "Alexandre Dumas"
 ```
