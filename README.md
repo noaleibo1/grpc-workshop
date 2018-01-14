@@ -1,5 +1,6 @@
 # gRPC-workshop
 Based on the official gRPC workshop - https://codelabs.developers.google.com/codelabs/cloud-grpc/index.html
+Also, see this video for general introduction to gRPC: https://www.youtube.com/watch?v=UVsIfSfS6I4
 
 Uses Go server instead of Node.js server.
 
