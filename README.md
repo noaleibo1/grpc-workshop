@@ -52,6 +52,8 @@ From this proto file we will generate Go file that wraps the gRPC connection for
 The generated files contain structs from all the "messages" defined in the proto files, and getters and setters to all structs.
 Also, generated files contain gRPC client and server wrappers for the service.
   
+Make sure you have protoc-gen-go in your $PATH. 
+If it's not there, simply run `export PATH=$PATH:$GOPATH/bin`.
 
 To generate the Go files from the proto file we need to use the following command:
 
