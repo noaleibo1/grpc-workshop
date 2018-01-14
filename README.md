@@ -418,7 +418,7 @@ To stream messages to the client, the stream's write() function is called when a
 
 Edit server.go and update the insert function to emit a new_book event when books are inserted:
 ```go
-func (s *service) Insert(empty *books.Empty, stream books.BookService_WatchServer) error {
+func (s *service) Watch(empty *books.Empty, stream books.BookService_WatchServer) error {
 	c := newBookEmitter.On("NewBook")
 	for {
 		<-c
