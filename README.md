@@ -149,7 +149,7 @@ import (
 
 var (
 	port = flag.Int("port", 50051, "The server port")
-	booksList = []*books.Book{
+	bookList = []*books.Book{
 		{
 			Id: 123,
 			Title: "A Tale of Two Cities",
@@ -176,7 +176,7 @@ type service struct {
 }
 
 func (s *service) List(context.Context, *books.Empty) (*books.BookList, error){
-	return &books.BookList{Books: booksList}, nil
+	return &books.BookList{Books: bookList}, nil
 }
 ```
 
@@ -210,7 +210,7 @@ and run ```protoc -I . books/books.proto --go_out=plugins=grpc:.```
 Now add the function to `server.go` as well:
 ```go
 func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, error){
-	booksList = append(booksList, book)
+	bookList = append(bookList, book)
 	return &books.Empty{}, nil
 }
 ```
@@ -279,9 +279,9 @@ To implement the Get method in the server, edit server.go and add the following 
 `server.go`
 ```go
 func (s *service) Get(ctx context.Context, req *books.BookIdRequest) (*books.Book, error){
-	for i := 0; i < len(booksList); i++ {
-		if booksList[i].Id == req.Id {
-			return booksList[i], nil
+	for i := 0; i < len(bookList); i++ {
+		if bookList[i].Id == req.Id {
+			return bookList[i], nil
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "Not found")
@@ -333,9 +333,9 @@ Now edit `server.go` and add the following delete handler function:
 `server.go`
 ```go
 func (s *service) Delete (ctx context.Context, req *books.BookIdRequest) (*books.Empty, error) {
-	for i := 0; i < len(booksList); i++ {
-		if booksList[i].Id == req.Id {
-			booksList = append(booksList[:i], booksList[i+1:]...)
+	for i := 0; i < len(bookList); i++ {
+		if bookList[i].Id == req.Id {
+			bookList = append(bookList[:i], bookList[i+1:]...)
 			return &books.Empty{}, nil
 		}
 	}
@@ -397,10 +397,18 @@ To implement this method you will need to install Emitter:
 go get github.com/olebedev/emitter
 ```
 
-Now edit server.go and add the following events package, bookStream event listener and watch handler function:
+Now edit server.go and add the following events package, bookStream event listener and watch handler function;
+First define the following var 
+```go
+var (
+    //...
+    newBookEmitter = emitter.Emitter{}
+)
+``` 
+and then modify the Insert function:
 ```go
 func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, error) {
-	booksList = append(booksList, book)
+	bookList = append(bookList, book)
 	newBookEmitter.Emit("NewBook")
 	return &books.Empty{}, nil
 }
@@ -409,14 +417,14 @@ Handler functions for streaming rpc methods are invoked with a writable stream o
 
 To stream messages to the client, the stream's write() function is called when an new_book event is emitted.
 
-Edit server.js and update the insert function to emit a new_book event when books are inserted:
+Edit server.go and update the insert function to emit a new_book event when books are inserted:
 ```go
 func (s *service) Watch(empty *books.Empty, stream books.BookService_WatchServer) error {
 	c := newBookEmitter.On("NewBook")
 	for {
 		<-c
-		booksListLength := len(booksList)
-		stream.Send(booksList[booksListLength-1])
+		bookListLength := len(bookList)
+		stream.Send(bookList[bookListLength-1])
 	}
 	newBookEmitter.Off("NewBook")
 	return nil
