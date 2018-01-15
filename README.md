@@ -180,7 +180,8 @@ func (s *service) List(context.Context, *books.Empty) (*books.BookList, error){
 }
 ```
 
-Run `go run server.go` and from another terminal tab run `go run client.go list`.
+Run `protoc -I . books/books.proto --go_out=plugins=grpc:.`, then `go run server.go` and from another terminal tab run `go run client.go`.
+
 You should now see this book listed!
 ```commandline
 Server sent 1 book(s).
@@ -205,7 +206,7 @@ service BookService {
   rpc Insert (Book) returns (Empty) {}
 }
 ```
-
+and run ```protoc -I . books/books.proto --go_out=plugins=grpc:.``` 
 Now add the function to `server.go` as well:
 ```go
 func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, error){
