@@ -106,7 +106,7 @@ func (s *service) List(context.Context, *books.Empty) (*books.Empty, error){
 	return &books.Empty{}, status.Error(codes.Unimplemented, "The server does not implement this method")
 }
 ```
-Run `go run server.go` and from another terminal tab run `go run client.go`. The error we receive now is ``rpc error: code = Unimplemented desc = The server does not implement this method``.
+Run `go run server.go` and from another terminal tab run `go run client.go list`. The error we receive now is ``rpc error: code = Unimplemented desc = The server does not implement this method``.
 This means we created a gRPC connection :) We just need to fix the List method.
 
 Edit the files as following:
@@ -181,6 +181,7 @@ func (s *service) List(context.Context, *books.Empty) (*books.BookList, error){
 ```
 
 Run `protoc -I . books/books.proto --go_out=plugins=grpc:.`, then `go run server.go` and from another terminal tab run `go run client.go`.
+
 You should now see this book listed!
 ```commandline
 Server sent 1 book(s).
@@ -213,7 +214,7 @@ func (s *service) Insert(ctx context.Context, book *books.Book) (*books.Empty, e
 	return &books.Empty{}, nil
 }
 ```
-To test this, restart the node server and then run the go gRPC command-line client's insert command, passing id, title, and author as arguments:
+To test this, restart the go server and then run the go gRPC command-line client's insert command, passing id, title, and author as arguments:
 ```commandline
 go run client.go insert 2 "The Three Musketeers" "Alexandre Dumas"
 ```
