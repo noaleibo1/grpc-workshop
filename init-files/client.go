@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"time"
 
-	pb "github.com/cloud-grpc/start/books"
+	pb "github.com/noaleibo1/grpc-workshop/init-files/books.com/books"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -123,7 +123,7 @@ func doGet(ctx context.Context, args ...string) {
 	}
 	conn, client := GetClient()
 	defer conn.Close()
-	r, err := client.Get(ctx, &pb.BookIdRequest{int32(id)})
+	r, err := client.Get(ctx, &pb.BookIdRequest{Id: int32(id)})
 	if err != nil {
 		log.Fatalf("Get book (%v): %v", id, err)
 	}
@@ -144,7 +144,7 @@ func doDelete(ctx context.Context, args ...string) {
 	}
 	conn, client := GetClient()
 	defer conn.Close()
-	r, err := client.Delete(ctx, &pb.BookIdRequest{int32(id)})
+	r, err := client.Delete(ctx, &pb.BookIdRequest{Id: int32(id)})
 	if err != nil {
 		log.Fatalf("Delete book (%v): %v", id, err)
 	}

@@ -66,6 +66,7 @@ To generate the Go files from the proto file we need to use the following comman
 
 
 Now, create a file called server.go and this to the file:
+
 ```go
 package main
 
@@ -75,7 +76,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	books "github.com/noaleibo1/grpc-workshop/start/books"
+	books "github.com/noaleibo1/grpc-workshop/start/books.com/books"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
@@ -102,7 +103,7 @@ func main() {
 type service struct {
 }
 
-func (s *service) List(context.Context, *books.Empty) (*books.Empty, error){
+func (s *service) List(context.Context, *books.Empty) (*books.Empty, error) {
 	return &books.Empty{}, status.Error(codes.Unimplemented, "The server does not implement this method")
 }
 ```

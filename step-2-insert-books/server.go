@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	books "github.com/noaleibo1/grpc-workshop/step-2-insert-books/books"
+	"github.com/noaleibo1/grpc-workshop/step-2-insert-books/books.com/books"
 	"golang.org/x/net/context"
 )
 
